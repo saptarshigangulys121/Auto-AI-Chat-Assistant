@@ -2,6 +2,12 @@
 
 A small terminal chatbot that generates replies with Google's Gemini API.
 
+## Terminal preview
+
+Example of the chat display. The reply shown is illustrative; live AI replies require a Gemini API key.
+
+![Illustrative terminal preview of Auto-AI-Chat-Assistant](./assets/terminal-preview.svg)
+
 ## Requirements
 
 - Python 3.10 or newer
