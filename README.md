@@ -1,4 +1,4 @@
-# Auto AI Chat Assistant
+# Auto-AI-Chat-Assistant
 
 A small terminal chatbot that generates replies with Google's Gemini API.
 
