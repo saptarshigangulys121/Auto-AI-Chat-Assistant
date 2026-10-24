@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import sys
+import textwrap
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -148,11 +149,12 @@ class AutomaticReplyChatbot:
 
     def run(self) -> None:
         """Run the interactive terminal session until the user exits."""
-        print("=== Automatic Reply AI Chatbot System Initialized ===")
-        print("Type 'exit' or 'quit' to stop the chatbot.\n")
+        print("=" * 72)
+        print("  GEMINI CHATBOT  |  Type 'exit' or 'quit' to end the conversation")
+        print("=" * 72)
         while True:
             try:
-                user_input = input("You: ")
+                user_input = input("\nMessage > ")
             except (EOFError, KeyboardInterrupt):
                 print("\nShutting down chatbot... Goodbye!")
                 return
@@ -162,8 +164,9 @@ class AutomaticReplyChatbot:
                 return
 
             LOGGER.info("MESSAGE RECEIVED | %s", _timestamp())
+            _display_message("YOU", user_input)
             try:
-                print("Bot is thinking...", flush=True)
+                print("\n  Gemini is thinking...", flush=True)
                 reply = self.generate_reply(user_input)
             except ValueError as exc:
                 reply = str(exc)
@@ -171,9 +174,27 @@ class AutomaticReplyChatbot:
                 LOGGER.exception("Unexpected reply-generation error (%s).", type(exc).__name__)
                 reply = "Sorry, I couldn't process that message. Please try again."
 
-            print(f"\nBot reply: {reply}", flush=True)
+            _display_message("GEMINI", reply)
             LOGGER.info("REPLY DISPATCHED | %s", _timestamp())
-            print()
+
+
+def _display_message(speaker: str, message: str) -> None:
+    """Print one speaker's message in a colored, clearly separated panel."""
+    width = 72
+    colors_enabled = sys.stdout.isatty() and os.getenv("NO_COLOR") is None
+    color = "\033[96m" if speaker == "YOU" else "\033[92m"
+    reset = "\033[0m"
+    rule = "─" * width
+    print("\n" + rule)
+    label = f"  {speaker}"
+    print(f"{color}{label}{reset}" if colors_enabled else label)
+    print(rule)
+    for line in message.splitlines() or [""]:
+        wrapped = textwrap.wrap(line, width=width - 4, break_long_words=True) or [""]
+        for part in wrapped:
+            visible = f"  {part}"
+            print(f"{color}{visible}{reset}" if colors_enabled else visible)
+    print(rule, flush=True)
 
 
 def _timestamp() -> str:
